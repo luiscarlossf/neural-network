@@ -13,7 +13,7 @@ class Perceptron:
         self.weights = None
 
     def active_function(self, inputs, threshold):
-    	result = (inputs * self.weights).sum()
+    	result = ((inputs * self.weights).sum())
     	print("\n------------------------------------")
     	print("Activation Function(input * weights) = ")
     	print("input: ", inputs)
@@ -22,8 +22,11 @@ class Perceptron:
     	print("input * weights: ", inputs * self.weights)
     	print("result: ", result)
     	print("---------------------------------------\n")
-
-    	return int(math.tanh(result))
+    	if math.tanh(result) > threshold:
+    		return 1
+    	else:
+    		return 0
+    	#return int(math.tanh(result))
 
 class NeuralNetwork:
 	def __init__(self, size):
@@ -34,7 +37,7 @@ class NeuralNetwork:
 		outputs = np.array(outputs)
 		weights = None
 		for perceptron in self.perceptrons:
-			weights = np.array([uniform(-1, 1) for i in range(0, inputs.shape[1])])
+			weights = np.array([0 for i in range(0, inputs.shape[1])])
 			perceptron.weights = weights
 		epoca = 0
 		print("===============TRAINING==================")
@@ -52,9 +55,7 @@ class NeuralNetwork:
 					output = perceptron.active_function(i, threshold)
 					if not output == outputs[index]:
 						error = outputs[index] - output
-						print("Ai")
-						print(error)
-						self.update_weigths(perceptron, inputs,learning_ratio, error)
+						self.update_weigths(perceptron, i,learning_ratio, error)
 						#errors[index] = False
 						errors = errors and False
 					else:
@@ -66,9 +67,11 @@ class NeuralNetwork:
 
 			if errors:
 				print("Ending training - 100 %")
+				input()
 				break
 			elif epoca == 1000:
 				print("Atingiu o limite de épocas!")
+				input()
 				break
 
 	def update_weigths(self, perceptron, inputs, learning_ratio, error):
@@ -81,6 +84,7 @@ class NeuralNetwork:
 		print("---------------------------------------\n")
 
 	def classify(self, input_t, threshold):
+		print("\nClassifying input\n")
 		perceptron = self.perceptrons[0]
 		if perceptron.active_function(input_t, threshold) == 0:
 			print(input_t , " -> Futebol")
@@ -90,15 +94,15 @@ class NeuralNetwork:
 
 if __name__ == "__main__":
 	neural = NeuralNetwork(1)
-	bias = 0
 	inputs = [[0,0], [0, 1], [1,0],[1,1]]
 	outputs =[0, 0, 1, 1]
-	learning_ratio = 0.1
-	threshold = 0
+	learning_ratio = 0.6
+	threshold = 0.4
 	neural.training(inputs, outputs, learning_ratio, threshold)
 	test  = [[1,1], [0,1], [1, 0], [0,0], [1,1]]
 	for i in test:
 		neural.classify(i,threshold)
+
 
 
 
